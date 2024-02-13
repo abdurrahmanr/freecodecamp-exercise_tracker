@@ -45,22 +45,18 @@ const getLogs = async (req, res) => {
 
 	if (to) populateOptions.match = { date: { $lte: to } };
 
-	const result = await User.findOne({ _id: id }).populate(populateOptions);
-
-	// const result = await User.aggregate([
-	// 	{
-	// 		$lookup: {
-	// 			from: "exercises",
-	// 			localField: "_id",
-	// 			foreignField: "userId",
-	// 			as: "logs",
-	// 		},
-	// 	},
-	// ]);
+	const result = await User.findOne({ _id: id })
+		.lean()
+		.populate(populateOptions)
+		.exec();
 
 	result.count = result.logs.length;
-	const { username, count, _id, logs: log } = result;
+	result.logs = result.logs.map((log) => ({
+		...log,
+		date: log.date.toDateString(),
+	}));
 
+	const { username, count, _id, logs: log } = result;
 	return res.json({ username, count, _id, log });
 };
 
