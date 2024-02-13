@@ -3,7 +3,8 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 
 const createExercise = async (req, res) => {
-	const { _id, description, duration, date } = req.body;
+	const { _id } = req.params;
+	const { description, duration, date } = req.body;
 
 	const newExercise = new Exercise({
 		userId: _id,
